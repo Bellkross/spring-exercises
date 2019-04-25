@@ -1,6 +1,12 @@
 package ua.procamp.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+import ua.procamp.model.jpa.User;
+
+import java.util.List;
 
 /**
  * This interface represents a data access object (DAO) for {@link User}.
@@ -12,6 +18,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * todo: 3. Create method that finds optional user by email fetching its address and roles using {@link org.springframework.data.jpa.repository.Query}
  * todo: 4. Add custom User repository interface
  */
-public interface UserRepository extends JpaRepository {
+@Transactional
+public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
+
+    @Transactional(readOnly = true)
+    List<User> findAllByAddress_City(String city);
+
+    @Transactional(readOnly = true)
+    @Query(value = "select u from User u left join fetch u.address left join fetch u.roles where u.email = :email")
+    User findUserAddressAndRolesByEmail(@Param("email") String email);
 
 }
