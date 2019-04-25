@@ -1,10 +1,14 @@
 package ua.procamp.dao.impl;
 
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ua.procamp.dao.UserDao;
 import ua.procamp.model.jpa.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class implements {@link UserDao} using JPA.
@@ -13,20 +17,26 @@ import java.util.List;
  * todo: 2. Enable transaction management on class level
  * todo: 3. Inject persistence context into {@link EntityManager} field
  */
+@Repository(value = "userDao")
+@Transactional
 public class JpaUserDao implements UserDao {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<User> findAll() {
-        throw new UnsupportedOperationException("Keep calm and implement the method");
+        return entityManager.createQuery("select u from User u", User.class).getResultList();
     }
 
     @Override
     public User findById(long id) {
-        throw new UnsupportedOperationException("Keep calm and implement the method");
+        return entityManager.find(User.class, id);
     }
 
     @Override
     public void save(User user) {
-        throw new UnsupportedOperationException("Keep calm and implement the method");
+        Objects.requireNonNull(user);
+        entityManager.persist(user);
     }
 }
